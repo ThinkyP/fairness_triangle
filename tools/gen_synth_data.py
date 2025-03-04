@@ -7,7 +7,7 @@ SEED = 1122334455
 seed(SEED) # set the random seed so that the random permutations can be reproduced again
 np.random.seed(SEED)
 
-def generate_synthetic_data(plot_data=False, n_samples=1000, disc_factor=np.pi / 4.0):
+def generate_synthetic_data(plot_data=False, n_samples=2000, disc_factor=np.pi / 4.0):
     n_samples = n_samples
     disc_factor = disc_factor
     
