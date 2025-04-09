@@ -1,15 +1,14 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from random import seed, shuffle
 from scipy.stats import multivariate_normal 
 
-SEED = 1122334455
-seed(SEED) # set the random seed so that the random permutations can be reproduced again
-np.random.seed(SEED)
 
-def generate_synthetic_data(plot_data=False, n_samples=2000, disc_factor=np.pi / 4.0):
+
+
+def generate_synthetic_data(plot_data=False, n_samples=2000, disc_factor=np.pi / 4.0, seed=0):
     n_samples = n_samples
     disc_factor = disc_factor
+    np.random.seed(seed)
     
     def gen_gaussian(mean_in, cov_in, class_label):
     
@@ -23,7 +22,7 @@ def generate_synthetic_data(plot_data=False, n_samples=2000, disc_factor=np.pi /
     covar1 = [[5, 1], 
             [1, 5]]
 
-    #p(x|y=-1)
+    #p(x|y=0)
     mean2 = [-2, -2]
     covar2 = [[10, 1], 
             [1, 3]]
@@ -35,8 +34,7 @@ def generate_synthetic_data(plot_data=False, n_samples=2000, disc_factor=np.pi /
     Y = np.hstack((Yp, Yn))
 
     # shuffle the data
-    np.random.seed(SEED)
-    perm = np.random.RandomState(seed=SEED).permutation(X.shape[0])
+    perm = np.random.RandomState(seed=seed).permutation(X.shape[0])
     X = X[perm]
     Y= Y[perm]
 
@@ -76,10 +74,11 @@ def generate_synthetic_data(plot_data=False, n_samples=2000, disc_factor=np.pi /
         X_s_1 = x_draw[Y_sen_draw == 1.0]
         y_s_0 = y_draw[Y_sen_draw == 0.0]
         y_s_1 = y_draw[Y_sen_draw == 1.0]
+
         plt.scatter(X_s_0[y_s_0==1.0][:, 0], X_s_0[y_s_0==1.0][:, 1], color='green', marker='x', s=35, linewidth=1.5, label= "Prot. +ve")
-        plt.scatter(X_s_0[y_s_0==-1.0][:, 0], X_s_0[y_s_0==-1.0][:, 1], color='red', marker='x', s=35, linewidth=1.5, label = "Prot. -ve")
+        plt.scatter(X_s_0[y_s_0==0][:, 0], X_s_0[y_s_0==0][:, 1], color='red', marker='x', s=35, linewidth=1.5, label = "Prot. -ve")
         plt.scatter(X_s_1[y_s_1==1.0][:, 0], X_s_1[y_s_1==1.0][:, 1], color='green', marker='o', facecolors='none', s=30, label = "Non-prot. +ve")
-        plt.scatter(X_s_1[y_s_1==-1.0][:, 0], X_s_1[y_s_1==-1.0][:, 1], color='red', marker='o', facecolors='none', s=30, label = "Non-prot. -ve")
+        plt.scatter(X_s_1[y_s_1==0][:, 0], X_s_1[y_s_1==0][:, 1], color='red', marker='o', facecolors='none', s=30, label = "Non-prot. -ve")
 
         
         plt.tick_params(axis='x', which='both', bottom='off', top='off', labelbottom='off') # dont need the ticks to see the data distribution
@@ -87,7 +86,7 @@ def generate_synthetic_data(plot_data=False, n_samples=2000, disc_factor=np.pi /
         plt.legend(loc=2, fontsize=15)
         plt.xlim((-15,10))
         plt.ylim((-10,15))
-        plt.savefig("img/data.png")
+        #plt.savefig("img/data.png")
         plt.show()
 
    #Y_sen_draw = {"s1": Y_sen} # all the sensitive features are stored in a dictionary
