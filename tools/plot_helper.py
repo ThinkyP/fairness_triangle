@@ -22,15 +22,21 @@ def plot_reg(Y_pred_p,Y_pred_f, Y_pred_all, xx, yy, X_s_0, y_s_0, X_s_1, y_s_1, 
     
     contour_p = plt.contour(xx, yy, Y_pred_p, levels=[0.5], linestyles='--', colors='green')
     contour_f = plt.contour(xx, yy, Y_pred_f, levels=[0.5], linestyles='--', colors='orange')
-    contour_all = plt.contour(xx, yy, Y_pred_all, levels=[0.5], linestyles='--', colors='purple')
+    contour_all = plt.contour(xx, yy, Y_pred_all, levels=[0], linestyles='--', colors='purple')
     
     
-
-    plt.scatter(X_s_0[y_s_0==1.0][:, 0], X_s_0[y_s_0==1.0][:, 1], color='green', marker='x', s=32, linewidth=1.4, label= "Prot. +ve disc_fac:")
-    plt.scatter(X_s_0[y_s_0==0][:, 0], X_s_0[y_s_0==0][:, 1], color='red', marker='x', s=32, linewidth=1.4, label = "Prot. -ve")
-    plt.scatter(X_s_1[y_s_1==1.0][:, 0], X_s_1[y_s_1==1.0][:, 1], color='lightgreen', marker='o', facecolors='none', s=30, label = "Non-prot. +ve")
-    plt.scatter(X_s_1[y_s_1==0][:, 0], X_s_1[y_s_1==0][:, 1], color='orange', marker='o', facecolors='none', s=30, label = "Non-prot. -ve")
-
+    
+    #plt.scatter(X_s_0[y_s_0==1.0][:, 0], X_s_0[y_s_0==1.0][:, 1], color='green', marker='x', s=32, linewidth=1.4, label= "Prot. +ve disc_fac:")
+    #plt.scatter(X_s_0[y_s_0==0][:, 0], X_s_0[y_s_0==0][:, 1], color='red', marker='x', s=32, linewidth=1.4, label = "Prot. -ve")
+    #plt.scatter(X_s_1[y_s_1==1.0][:, 0], X_s_1[y_s_1==1.0][:, 1], color='lightgreen', marker='o', facecolors='none', s=30, label = "Non-prot. +ve")
+    #plt.scatter(X_s_1[y_s_1==0][:, 0], X_s_1[y_s_1==0][:, 1], color='orange', marker='o', facecolors='none', s=30, label = "Non-prot. -ve")
+    
+    
+    plt.scatter(X_s_0[y_s_0==1.0][:, 0], X_s_0[y_s_0==1.0][:, 1], color='green', marker='x', s=32, linewidth=1.4, label= "Non-Prot. +ve")
+    plt.scatter(X_s_0[y_s_0==0][:, 0], X_s_0[y_s_0==0][:, 1], color='red', marker='x', s=32, linewidth=1.4, label = "Non-Prot. -ve")
+    plt.scatter(X_s_1[y_s_1==1.0][:, 0], X_s_1[y_s_1==1.0][:, 1], color='lightgreen', marker='o', facecolors='none', s=30, label = "prot. +ve")
+    plt.scatter(X_s_1[y_s_1==0][:, 0], X_s_1[y_s_1==0][:, 1], color='orange', marker='o', facecolors='none', s=30, label = "prot. -ve")
+    
 
 
     legend = plt.legend()

@@ -72,13 +72,14 @@ def generate_synthetic_data(plot_data=False, n_samples=2000, disc_factor=np.pi /
 
         X_s_0 = x_draw[Y_sen_draw == 0.0]
         X_s_1 = x_draw[Y_sen_draw == 1.0]
+        
         y_s_0 = y_draw[Y_sen_draw == 0.0]
         y_s_1 = y_draw[Y_sen_draw == 1.0]
 
-        plt.scatter(X_s_0[y_s_0==1.0][:, 0], X_s_0[y_s_0==1.0][:, 1], color='green', marker='x', s=35, linewidth=1.5, label= "Prot. +ve")
-        plt.scatter(X_s_0[y_s_0==0][:, 0], X_s_0[y_s_0==0][:, 1], color='red', marker='x', s=35, linewidth=1.5, label = "Prot. -ve")
-        plt.scatter(X_s_1[y_s_1==1.0][:, 0], X_s_1[y_s_1==1.0][:, 1], color='green', marker='o', facecolors='none', s=30, label = "Non-prot. +ve")
-        plt.scatter(X_s_1[y_s_1==0][:, 0], X_s_1[y_s_1==0][:, 1], color='red', marker='o', facecolors='none', s=30, label = "Non-prot. -ve")
+        plt.scatter(X_s_0[y_s_0==1.0][:, 0], X_s_0[y_s_0==1.0][:, 1], color='green', marker='x', s=35, linewidth=1.5, label= "Non-Prot. +ve")
+        plt.scatter(X_s_0[y_s_0==0][:, 0], X_s_0[y_s_0==0][:, 1], color='red', marker='x', s=35, linewidth=1.5, label = "Non-Prot. -ve")
+        plt.scatter(X_s_1[y_s_1==1.0][:, 0], X_s_1[y_s_1==1.0][:, 1], color='green', marker='o', facecolors='none', s=30, label = "prot. +ve")
+        plt.scatter(X_s_1[y_s_1==0][:, 0], X_s_1[y_s_1==0][:, 1], color='red', marker='o', facecolors='none', s=30, label = "prot. -ve")
 
         
         plt.tick_params(axis='x', which='both', bottom='off', top='off', labelbottom='off') # dont need the ticks to see the data distribution
