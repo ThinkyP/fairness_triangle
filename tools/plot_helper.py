@@ -3,23 +3,38 @@ import scienceplots
 import numpy as np
 from matplotlib.colors import LinearSegmentedColormap
 
-def science_fig():
-    textwidth =  7.285
-    aspect_ratio = 6/8
-    scale = 1.0
+def science_fig(style="science", grid=True, scale=1.0, aspect_ratio=6/8, textwidth=7.285):
+    """
+    Creates a figure using scientific styles.
+
+    Parameters:
+    - style: str, which scienceplot style to use (default 'science')
+    - grid: bool, whether to show grid
+    - scale: scaling factor for figure size
+    - aspect_ratio: figure height / width ratio
+    - textwidth: figure width base size (inches)
+
+    Returns:
+    - fig: matplotlib figure object
+    """
+    styles = [style]
+    if grid:
+        styles.append("grid")
+
+    plt.style.use(styles)
+
     width = textwidth * scale
     height = width * aspect_ratio
-    
-    plt.style.use(["science", "grid"])
 
     plt.rcParams.update({
-    'font.size': 15,         # global font size
-    'axes.labelsize': 14,    # axis label size
-    'xtick.labelsize': 14,   # x-axis tick label size
-    'ytick.labelsize': 14   # y-axis tick label size
+        'font.size': 15,
+        'axes.labelsize': 14,
+        'xtick.labelsize': 14,
+        'ytick.labelsize': 14
     })
-    
-    return plt.figure(figsize=(width, height))
+
+    fig = plt.figure(figsize=(width, height))
+    return fig
 
 
 
