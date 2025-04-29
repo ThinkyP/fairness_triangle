@@ -6,6 +6,20 @@ from scipy.stats import multivariate_normal
 
 
 def generate_synthetic_data(plot_data=False, n_samples=2000, disc_factor=np.pi / 4.0, seed=0):
+    """
+    Generate synthetic data for binary classification with a sensitive attribute.
+    
+    Parameters:
+    - plot_data (bool): Whether to visualize the dataset.
+    - n_samples (int): Samples per class.
+    - disc_factor (float): Rotation angle for sensitive feature generation.
+    - seed (int): Random seed for reproducibility.
+    
+    Returns:
+    - X (ndarray): Feature matrix.
+    - Y (ndarray): Target labels.
+    - Y_sen (ndarray): Sensitive attribute.
+    """
     n_samples = n_samples
     disc_factor = disc_factor
     np.random.seed(seed)

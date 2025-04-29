@@ -1,6 +1,35 @@
 import matplotlib.pyplot as plt
 import scienceplots
 import numpy as np
+from matplotlib.colors import LinearSegmentedColormap
+
+def science_fig():
+    textwidth =  7.285
+    aspect_ratio = 6/8
+    scale = 1.0
+    width = textwidth * scale
+    height = width * aspect_ratio
+    
+    plt.style.use(["science", "grid"])
+
+    plt.rcParams.update({
+    'font.size': 15,         # global font size
+    'axes.labelsize': 14,    # axis label size
+    'xtick.labelsize': 14,   # x-axis tick label size
+    'ytick.labelsize': 14   # y-axis tick label size
+    })
+    
+    return plt.figure(figsize=(width, height))
+
+
+
+def truncate_colormap(cmap_name, minval=0.2, maxval=1.0, n=256):
+    cmap = plt.get_cmap(cmap_name)
+    new_cmap = LinearSegmentedColormap.from_list(
+        f"trunc({cmap_name},{minval:.2f},{maxval:.2f})",
+        cmap(np.linspace(minval, maxval, n))
+    )
+    return new_cmap
 
 #Every function should work but this function is optimized for creating "scientific plots"
 def plot_reg(Y_pred_p,Y_pred_f, Y_pred_all, xx, yy, X_s_0, y_s_0, X_s_1, y_s_1, disc_factor, a):

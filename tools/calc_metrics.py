@@ -32,10 +32,12 @@ def calc_MD(Y_pred, Y_test, symmetrized = True):
     return MD
 
 def calc_DI(Y_pred, Y_test, symmetrized = True):
-    #MD IS CALC USING Y_SEN!!!!
+    #DI IS CALC USING Y_SEN!!!!
     TP, TN, FP, FN, FPR, FNR = calc_confusion_matrix(Y_pred, Y_test)
-    
-    DI = FPR / (1-FNR)
+    if FNR == 1:            #This cathes zero divition
+        DI = 0
+    else:
+        DI = FPR / (1-FNR)
     
     if symmetrized:
         Y_pred = np.array([1-x for x in Y_pred])
