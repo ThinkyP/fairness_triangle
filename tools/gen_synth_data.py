@@ -32,12 +32,12 @@ def generate_synthetic_data(plot_data=False, n_samples=2000, disc_factor=np.pi /
         return nv,X,y
 
     #p(x|y=1)
-    mean1 = [2, 2]
+    mean1 = [5, 5]
     covar1 = [[5, 1], 
             [1, 5]]
 
     #p(x|y=0)
-    mean2 = [-2, -2]
+    mean2 = [-5, -5]
     covar2 = [[10, 1], 
             [1, 3]]
 

@@ -100,3 +100,74 @@ def calc_DI(Y_pred, Y_test, symmetrized=True):
         return min(DI, DI_flipped)
 
     return DI
+
+import numpy as np
+
+def tune_c_and_cbar_separately(
+    p_reg, f_reg, 
+    X_val, Y_val, Y_sen_val, 
+    lmd, 
+    symmetric_fairness=False,
+    c_grid=None, cbar_grid=None, 
+    init_c=0.5, init_cbar=0.5,
+    max_iters=3, atol=1e-4
+):
+    """
+    Separately tunes c and c_bar on validation:
+      - c is chosen to minimize BER (holding c_bar fixed)
+      - c_bar is chosen to minimize MD (holding c fixed)
+    Optionally performs a few coordinate-descent passes.
+
+    Returns:
+        c_opt, cbar_opt, ber_opt, md_opt
+    """
+    # Precompute scores on validation
+    p_val = p_reg.predict_proba(X_val)[:, 1]
+    f_val = f_reg.predict_proba(X_val)[:, 1]
+
+    # Reasonable default grids over [0,1]
+    if c_grid is None:
+        c_grid = np.linspace(0.0, 1.0, 1001)
+    if cbar_grid is None:
+        cbar_grid = np.linspace(0.0, 1.0, 1001)
+
+    # Initialize
+    c = float(init_c)
+    c_bar = float(init_cbar)
+    ber_opt = None
+    md_opt = None
+
+    for _ in range(max_iters):
+        # --- Step 1: optimize c for BER given current c_bar ---
+        best_ber = np.inf
+        best_c = c
+        for c_candidate in c_grid:
+            s = p_val - c_candidate - lmd * (f_val - c_bar)
+            y_hat = (s > 0).astype(int)
+            ber = calc_BER(y_hat, Y_val)
+            if ber < best_ber:
+                best_ber = ber
+                best_c = float(c_candidate)
+        c = best_c
+        ber_opt = best_ber
+
+        # --- Step 2: optimize c_bar for MD given new c ---
+        best_md = np.inf
+        best_cbar = c_bar
+        for cbar_candidate in cbar_grid:
+            s = p_val - c - lmd * (f_val - cbar_candidate)
+            y_hat = (s > 0).astype(int)
+            md = calc_MD(y_hat, Y_sen_val, symmetric_fairness)
+            if md < best_md:
+                best_md = md
+                best_cbar = float(cbar_candidate)
+        # check convergence
+        if np.isclose(best_cbar, c_bar, atol=atol) and np.isclose(best_c, c, atol=atol):
+            c_bar = best_cbar
+            md_opt = best_md
+            break
+
+        c_bar = best_cbar
+        md_opt = best_md
+
+    return c, c_bar, ber_opt, md_opt
