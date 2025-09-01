@@ -14,7 +14,7 @@ def add_sym_noise(Y, flip_prob, seed):
     - Y_corr: array with labels after symmetric noise corruption
     """
     np.random.seed(seed)
-    mask = np.random.rand(Y.shape[0]) < flip_prob
+    mask = np.random.rand(Y.shape[0]) <= flip_prob
     Y_corr =  np.where(mask, 1 - Y, Y)         # Y is 1 or 0
     return Y_corr
 
@@ -39,55 +39,43 @@ def add_asym_noise(Y, flip_prob_0_to_1, flip_prob_1_to_0, seed):
     Y_corr = Y.copy()
 
     # Flip 0 → 1 with given probability
-    mask_0 = (Y == 0) & (np.random.rand(len(Y)) < flip_prob_0_to_1)
-    Y_corr[mask_0] = 1
-
+    mask_0 = (Y == 0) & (np.random.rand(len(Y)) <= flip_prob_0_to_1)
+    
     # Flip 1 → 0 with given probability
-    mask_1 = (Y == 1) & (np.random.rand(len(Y)) < flip_prob_1_to_0)
+    mask_1 = (Y == 1) & (np.random.rand(len(Y)) <= flip_prob_1_to_0)
+    
+    Y_corr[mask_0] = 1    
     Y_corr[mask_1] = 0
 
     return Y_corr
 
-def add_instance_dependent_noise(X, Y, w, b, max_flip_prob=0.5, seed=None):
+def add_instance_dependent_noise(X, Y, w, b, max_flip_prob=0.5, alpha=1.0, seed=None):
     """
-    Introduces instance-dependent label noise for binary labels {0, 1}.
-    The closer a sample is to the decision boundary, the higher its chance of being flipped.
-
-    Parameters:
-    - X: array-like of shape (n_samples, 2), feature vectors
-    - Y: array-like of shape (n_samples,), original labels in {0, 1}
-    - w: weight vector of the linear boundary (e.g. from LDA)
-    - b: bias term of the linear boundary
-    - max_flip_prob: maximum flip probability at the decision boundary (typically 0.5)
-    - seed: optional int, random seed for reproducibility
-
-    Returns:
-    - Y_corr: array with labels after instance-dependent noise corruption
+    Instance-dependent noise: samples near decision boundary are noisier.
+    Flip probability decays exponentially with distance.
     """
     if seed is not None:
         np.random.seed(seed)
 
-    # Compute signed distances to the decision boundary
-    signed_dists = np.array([
-        compute_signed_distance_to_boundary(x[0], x[1], w, b) for x in X
-    ])
-
-    # Convert to absolute distances (smaller = closer to boundary)
+    # Signed distance (works for any dimension)
+    signed_dists = (X @ w + b) / np.linalg.norm(w)
     abs_dists = np.abs(signed_dists)
 
-    # Normalize to [0, 1] and invert so that closer = higher flip prob
-    max_dist = np.max(abs_dists)
-    rel_proximity = 1 - abs_dists / max_dist
+    # Flip probability (exponential decay with distance)
+    #flip_probs = max_flip_prob * np.exp(-alpha * abs_dists)
+    
+    # Normalize distances to [0,1]
+    d_min, d_max = abs_dists.min(), abs_dists.max()
+    norm_dists = (abs_dists - d_min) / (d_max - d_min + 1e-12)
+    flip_probs = max_flip_prob * (1 - norm_dists)
 
-    # Scale to max_flip_prob
-    flip_probs = rel_proximity * max_flip_prob
-
-    # Perform stochastic flipping
+    # Apply stochastic flipping
     random_vals = np.random.rand(len(Y))
     mask = random_vals < flip_probs
     Y_corr = np.where(mask, 1 - Y, Y)
 
     return Y_corr
+
 
 def compute_signed_distance_to_boundary(x0, y0, w, b):
     """

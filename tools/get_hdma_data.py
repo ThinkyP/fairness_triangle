@@ -15,13 +15,11 @@ def get_hdma_data(perc_original, balanced_y=False, balanced_y_bar=False):
     # Remove columns with >35% missing values
     missing_ratio = sample_df.isnull().mean()
     cols_to_drop = missing_ratio[missing_ratio > 0.35].index.tolist()
-    cols_to_drop = cols_to_drop + ['lei', 'state_code','county_code', 'applicant_age_above_62'] 
+    cols_to_drop = cols_to_drop + ['lei', 'derived_dwelling_category', 'activity_year', 'census_tract', 'purchaser_type', 'preapproval', 'state_code','county_code', 'applicant_age_above_62'] 
     sample_df_clean = sample_df.drop(columns=cols_to_drop)
     must_have_val = [
-        'activity_year',
         'co_applicant_ethnicity_1',
         'co_applicant_race_1',
-        'census_tract',
         'loan_amount',
         'property_value',
         'income',
@@ -109,13 +107,17 @@ def get_hdma_data(perc_original, balanced_y=False, balanced_y_bar=False):
     sample_df_clean = pd.concat([sample_df_clean.drop(columns=['derived_sex']), sex_dummies], axis=1)
 
 
-    sample_df_clean['derived_dwelling_category'] = sample_df_clean['derived_dwelling_category'].astype(str).str.strip()
-    dwelling_dummies = pd.get_dummies(sample_df_clean['derived_dwelling_category'], prefix='dwelling_category', drop_first=True)
-    sample_df_clean = pd.concat([sample_df_clean.drop(columns=['derived_dwelling_category']), dwelling_dummies], axis=1)
-
 
     sample_df_clean = sample_df_clean.dropna(subset=['conforming_loan_limit'])
     sample_df_clean['conforming_loan_limit'] = sample_df_clean['conforming_loan_limit'].map({'C': 1,'NC': 0})
+    sample_df_clean['conforming_loan_limit'] = sample_df_clean['conforming_loan_limit'].astype(bool)
+    sample_df_clean = sample_df_clean.dropna(subset=['conforming_loan_limit'])
+ 
+    sample_df_clean['loan_type'] = sample_df_clean['loan_type'].astype(str).str.strip()
+    loan_type_dummies = pd.get_dummies(sample_df_clean['loan_type'],prefix='loan_type',drop_first=True)
+    sample_df_clean = pd.concat([sample_df_clean.drop(columns=['loan_type']), loan_type_dummies],axis=1)
+
+
 
     if(balanced_y):
         df_1 = sample_df_clean[sample_df_clean['action_taken'] == 1]

@@ -1,5 +1,5 @@
 import pandas as pd
-
+from sklearn import preprocessing
 
 def get_adult_data():
 # Define column names
@@ -22,7 +22,7 @@ def get_adult_data():
 
     Y_test = (df_test["income"] == ">50K.").astype(int)
     Y_sen_test = (df_test["sex"] == "Female").astype(int)
-    X_test = df_test.drop(columns=["sex", "income", "fnlwgt"])
+    X_test = df_test.drop(columns=["sex", "income", "fnlwgt", "capital-gain", "capital-loss"])
     X_test = pd.get_dummies(X_test, drop_first=True)
     
     print(Y_test.unique())
@@ -33,6 +33,26 @@ def get_adult_data():
     X_test = X_test.fillna(0)
     Y_test = Y_test.loc[X_test.index]
     Y_sen_test = Y_sen_test.loc[X_test.index]
+    
+    #Standardize numeric feature to mean=0 and std=1
+    num_cols = X_train.select_dtypes(include=["int64", "float64"]).columns
+    cat_cols = X_train.select_dtypes(exclude=["int64", "float64"]).columns
+
+    # Initialize scaler
+    scaler =  preprocessing.StandardScaler()
+
+    # Fit and transform only numeric columns
+    X_train_num_scaled = scaler.fit_transform(X_train[num_cols])
+
+    # Convert back to DataFrame to keep column names
+    X_train_num_scaled = pd.DataFrame(X_train_num_scaled, columns=num_cols, index=X_train.index)
+
+    # Concatenate scaled numeric columns with untouched categorical columns
+    X_train_scaled = pd.concat([X_train_num_scaled, X_train[cat_cols]], axis=1)
+
+    X_test_num_scaled = scaler.transform(X_test[num_cols])
+    X_test_num_scaled = pd.DataFrame(X_test_num_scaled, columns=num_cols, index=X_test.index)
+    X_test_scaled = pd.concat([X_test_num_scaled, X_test[cat_cols]], axis=1)
 
 
-    return X_train, Y_train, Y_sen_train, X_test, Y_test, Y_sen_test
+    return X_train_scaled, Y_train, Y_sen_train, X_test_scaled, Y_test, Y_sen_test

@@ -49,7 +49,24 @@ def calc_BER(Y_pred, Y_test):
     BER = (FPR + FNR) / 2
     return BER
 
-def calc_MD(Y_pred, Y_test, symmetrized=True):
+
+def calc_ACC(Y_pred, Y_test):
+    """
+    Calculates the Balanced Error Rate (BER).
+
+    Parameters:
+    - Y_pred: array-like, predicted binary labels {0, 1}
+    - Y_test: array-like, true binary labels {0, 1}
+
+    Returns:
+    - BER: Balanced Error Rate
+    """
+    TP, TN, FP, FN, FPR, FNR = calc_confusion_matrix(Y_pred, Y_test)
+    acc = (TP + TN) / (TP + TN + FP + FN)
+    return acc
+
+
+def calc_MD(Y_pred, Y_test, symmetrized=False):
     """
     Calculates the Mean Difference (MD) between error rates.
 
